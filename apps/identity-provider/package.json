@@ -4,24 +4,33 @@
   "private": true,
   "nx": {
     "targets": {
-      "build": {
+      "build-ui": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "webpack-cli build",
-          "args": [
-            "node-env=production"
+          "command": "cd packages/identity-ui && npm run build"
+        }
+      },
+      "build": {
+        "executor": "@nx/js:tsc",
+        "dependsOn": ["build-ui"],
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "dist/apps/identity-provider",
+          "main": "apps/identity-provider/src/main.ts",
+          "tsConfig": "apps/identity-provider/tsconfig.app.json",
+          "assets": [
+            "apps/identity-provider/src/assets",
+            {
+              "input": "apps/identity-provider/public",
+              "glob": "**/*",
+              "output": "public"
+            }
           ]
-        },
-        "configurations": {
-          "development": {
-            "args": [
-              "node-env=development"
-            ]
-          }
         }
       },
       "serve": {
-        "continuous": true,
         "executor": "@nx/js:node",
         "defaultConfiguration": "development",
         "dependsOn": [
@@ -46,5 +55,13 @@
         }
       }
     }
+  },
+  "dependencies": {
+    "oidc-provider": "^8.8.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/node": "^20.17.57",
+    "@types/oidc-provider": "^8.5.2"
   }
 }
